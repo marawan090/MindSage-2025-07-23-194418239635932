@@ -48,25 +48,41 @@ export const AuthProvider = ({ children }) => {
         setIdentity(identity);
         setPrincipal(identity.getPrincipal().toString());
 
-        // Create authenticated actor with improved error handling
+        // Create authenticated actor with improved error handling for real Internet Identity
         try {
-          const agentOptions = createAgentOptions(identity);
-          const agent = new HttpAgent(agentOptions);
-          
-          await setupAgent(agent);
+          // For real Internet Identity, use more robust configuration
+          const agent = new HttpAgent({
+            identity,
+            host: process.env.DFX_NETWORK === "ic" ? "https://ic0.app" : "http://127.0.0.1:4943",
+          });
+
+          // Only fetch root key for local development
+          if (process.env.DFX_NETWORK !== "ic") {
+            try {
+              await agent.fetchRootKey();
+              console.log("Root key fetched successfully for local development");
+            } catch (rootKeyError) {
+              console.warn("Root key fetch failed, continuing anyway:", rootKeyError);
+            }
+          }
 
           const authenticatedActor = createActor(canisterId, {
             agent,
           });
           setActor(authenticatedActor);
-          console.log("Successfully created authenticated actor");
+          console.log("Successfully created authenticated actor with real Internet Identity");
         } catch (error) {
           console.error("Error creating authenticated actor:", error);
           
-          // Enhanced fallback: try with default configuration
+          // Enhanced fallback: try with minimal configuration
           try {
-            console.log("Attempting fallback actor creation...");
-            const fallbackActor = createActor(canisterId);
+            console.log("Attempting minimal actor creation...");
+            const fallbackActor = createActor(canisterId, {
+              agent: new HttpAgent({
+                identity,
+                host: process.env.DFX_NETWORK === "ic" ? "https://ic0.app" : "http://127.0.0.1:4943",
+              }),
+            });
             setActor(fallbackActor);
             console.log("Fallback actor created successfully");
           } catch (fallbackError) {
@@ -144,36 +160,54 @@ export const AuthProvider = ({ children }) => {
   };
 
   const registerUser = async (username) => {
-    if (!actor) return { success: false, error: 'Not authenticated' };
+    if (!actor) return { success: false, error: 'Not authenticated with Internet Identity' };
 
     try {
-      // Add timeout and retry logic for registration
+      console.log('Attempting user registration with real Internet Identity...');
+      
+      // Add timeout and retry logic for registration with real IC
       const result = await Promise.race([
         actor.register_user(username),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Registration timeout')), 10000)
+          setTimeout(() => reject(new Error('Registration timeout - please try again')), 15000)
         )
       ]);
       
       if (result.Ok) {
         setUserProfile(result.Ok);
+        console.log('User registered successfully with Internet Identity:', result.Ok);
         return { success: true, profile: result.Ok };
       } else {
+        console.error('Registration failed:', result.Err);
         return { success: false, error: result.Err };
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Registration error with Internet Identity:', error);
       
-      // Handle certificate verification errors specifically
+      // Handle specific IC-related errors
       if (error.message.includes('certificate verification failed') || 
           error.message.includes('signature could not be verified')) {
         return { 
           success: false, 
-          error: 'Authentication issue with local development. Try refreshing the page or check console for details.' 
+          error: 'Authentication verification failed. Please try logging out and back in with Internet Identity.' 
         };
       }
       
-      return { success: false, error: error.message || 'Registration failed' };
+      if (error.message.includes('timeout')) {
+        return { 
+          success: false, 
+          error: 'Registration timed out. Please check your connection and try again.' 
+        };
+      }
+      
+      if (error.message.includes('Call was rejected')) {
+        return { 
+          success: false, 
+          error: 'Call rejected by canister. Please refresh and try again.' 
+        };
+      }
+      
+      return { success: false, error: error.message || 'Registration failed with Internet Identity' };
     }
   };
 
