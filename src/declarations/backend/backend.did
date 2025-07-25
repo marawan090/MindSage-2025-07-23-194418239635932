@@ -1,0 +1,53 @@
+type ProgressReport = record {
+  total_sessions : nat32;
+  user_principal : principal;
+  trend : text;
+  generated_at : nat64;
+  recommendations : vec text;
+  avg_stress_reduction : float32;
+};
+type Result = variant { Ok : TherapySession; Err : text };
+type Result_1 = variant { Ok : ProgressReport; Err : text };
+type Result_2 = variant { Ok : text; Err : text };
+type Result_3 = variant { Ok : UserProfile; Err : text };
+type Result_4 = variant { Ok : vec TherapySession; Err : text };
+type Result_5 = variant { Ok; Err : text };
+type TherapySession = record {
+  id : text;
+  user_principal : principal;
+  duration : nat32;
+  stress_level_before : float32;
+  notes : text;
+  timestamp : nat64;
+  voice_analysis : VoiceAnalysis;
+  stress_level_after : float32;
+  session_type : text;
+};
+type UserProfile = record {
+  session_count : nat32;
+  total_sessions : nat32;
+  "principal" : principal;
+  username : text;
+  created_at : nat64;
+  last_active : nat64;
+};
+type VoiceAnalysis = record {
+  tempo : float32;
+  emotion : text;
+  stress_indicators : vec text;
+  pitch : float32;
+};
+service : () -> {
+  end_therapy_session : (text, nat32, float32, text, float32, float32) -> (
+      Result,
+    );
+  generate_user_progress_report : () -> (Result_1) query;
+  get_cbt_reflection : (text) -> (Result_2);
+  get_total_sessions : () -> (nat64) query;
+  get_total_users : () -> (nat64) query;
+  get_user_profile : () -> (Result_3) query;
+  get_user_sessions : () -> (Result_4) query;
+  register_user : (text) -> (Result_3);
+  start_therapy_session : (text, float32) -> (Result_2);
+  update_last_active : () -> (Result_5);
+}

@@ -1,50 +1,252 @@
-# LLM Chatbot
+# MindSage - AI-Powered Voice Therapy Platform
 
-The LLM Chatbot example demonstrates how an ICP smart contract can be used to interact with a large language model (LLM) to generate text. The user can input a prompt, and the smart contract will use the LLM to generate a response.
-The response is then returned to the user, and the user can submit some follow-up prompts to continue the conversation.
+MindSage is a next-generation AI therapy platform that delivers real EMDR and CBT treatment through voice-based AI interactions. Built on the Internet Computer (IC), it provides secure, private, and decentralized mental health support with no appointments needed.
 
-## Deploying from ICP Ninja
+![MindSage Banner](https://img.shields.io/badge/MindSage-AI%20Therapy%20Platform-purple?style=for-the-badge)
 
-When viewing this project in ICP Ninja, you can deploy it directly to the mainnet for free by clicking "Run" in the upper right corner. Open this project in ICP Ninja:
+## 🌟 Features
 
-[![](https://icp.ninja/assets/open.svg)](https://icp.ninja/i?g=https://github.com/marawan090/MindSage-2025-07-23-194418239635932)
+### 🎯 **Core Therapy Features**
+- **Real EMDR & CBT Sessions** - Science-backed therapy protocols guided by AI
+- **Voice Analysis** - Real-time emotional state detection through voice patterns
+- **24/7 Availability** - Access therapy support anytime, anywhere
+- **Progress Tracking** - Comprehensive analytics and personalized insights
+- **Session Management** - Start, track, and analyze therapy sessions
 
-## Deploying from ICP Ninja
+### 🔐 **Authentication & Security**
+- **Internet Identity Integration** - Passwordless authentication using IC's native identity system
+- **Principal-based Access Control** - Secure user data isolation
+- **Local Development Mode** - Simplified authentication for development
+- **Privacy First** - All data stored securely on the decentralized Internet Computer
 
-[![](https://icp.ninja/assets/open.svg)](https://icp.ninja/editor?g=https://github.com/dfinity/examples/tree/master/rust/counter)
+### 📊 **Mental Health Tools**
+- **CBT Reflection Engine** - AI-powered cognitive behavioral therapy guidance
+- **Stress Level Tracking** - Before/after session stress measurement
+- **Emotion Detection** - Voice pattern analysis for emotional insights
+- **Progress Reports** - Personalized recommendations and trend analysis
+- **Session History** - Complete therapy journey documentation
 
-## Build and deploy from the command-line
+## 🏗️ Architecture
 
-### 1. [Download and install the IC SDK.](https://internetcomputer.org/docs/building-apps/getting-started/install)
+### **Backend (Rust)**
+- **Canister-based Architecture** - Leverages IC's actor model
+- **Stable Memory Storage** - Persistent user data and session storage
+- **Authentication Layer** - Principal-based user management
+- **Therapy Engine** - Core therapy session logic and analysis
 
-### 2. Download your project from ICP Ninja using the 'Download files' button on the upper left corner, or [clone the GitHub examples repository.](https://github.com/dfinity/examples/)
+### **Frontend (React + Vite)**
+- **Modern React Application** - Responsive, component-based architecture
+- **Tailwind CSS** - Beautiful, accessible UI design
+- **Authentication Context** - Seamless auth state management
+- **Development/Production Modes** - Adaptive authentication systems
 
-### 3. Navigate into the project's directory.
+## 🚀 Quick Start
 
-### 4. Set up Ollama
+### Prerequisites
+- [IC SDK (dfx)](https://internetcomputer.org/docs/building-apps/getting-started/install) v0.28.0+
+- [Node.js](https://nodejs.org/) v18+
+- [Rust](https://rustup.rs/) (for backend compilation)
 
-To be able to test the agent locally, you'll need a server for processing the agent's prompts. For that, we'll use `ollama`, which is a tool that can download and serve LLMs.
-See the documentation on the [Ollama website](https://ollama.com/) to install it. Once it's installed, run:
+### 1. Clone and Setup
+```bash
+git clone <your-repository-url>
+cd MindSage-2025-07-23-194418239635932
+```
+
+### 2. Install Dependencies
+```bash
+# Install frontend dependencies
+npm install
+```
+
+### 3. Deploy Locally
+```bash
+# Start local IC replica
+dfx start --clean --background
+
+# Deploy all canisters
+dfx deploy
+
+# Get the frontend URL
+echo "Frontend URL: http://$(dfx canister id frontend).localhost:4943"
+```
+
+### 4. Access the Application
+Open the provided frontend URL in your browser and start your therapy journey!
+
+## 🔧 Development
+
+### **Local Development Mode**
+The application automatically detects local development and uses a simplified authentication system:
+- **No Internet Identity Required** - Mock authentication for easy testing
+- **Instant Registration** - Immediate username registration
+- **Simulated Data** - Mock therapy sessions and progress data
+- **Full Feature Access** - All features work with test data
+
+### **Production Mode**
+When deployed to IC mainnet:
+- **Full Internet Identity** - Real passwordless authentication
+- **Persistent Storage** - User data stored in stable memory
+- **Real Canister Calls** - Actual blockchain interactions
+- **Secure Access Control** - Principal-based data isolation
+
+### **Switching Between Modes**
+To switch from development to production mode, edit `frontend/src/main.jsx`:
+
+```javascript
+// Development mode (current)
+const isDevelopment = true; 
+
+// Production mode
+const isDevelopment = process.env.DFX_NETWORK !== "ic" || 
+                     process.env.NODE_ENV === "development" || 
+                     window.location.hostname === "localhost" || 
+                     window.location.hostname === "127.0.0.1" ||
+                     window.location.hostname.includes(".localhost");
+```
+
+## 📱 User Journey
+
+### **1. Landing Page**
+- Beautiful gradient hero section
+- Feature showcase
+- Authentication entry point
+
+### **2. Authentication**
+- **Development**: Instant mock login
+- **Production**: Internet Identity integration
+- Username registration for new users
+
+### **3. Dashboard**
+Four main sections:
+- **Overview**: Progress statistics and recommendations
+- **New Session**: Start therapy sessions with stress tracking
+- **CBT Reflection**: Get AI-powered cognitive behavioral therapy guidance
+- **Session History**: Complete therapy journey documentation
+
+### **4. Therapy Sessions**
+- Choose session type (CBT, EMDR, Assessment)
+- Set initial stress level
+- Real-time session tracking
+- Voice analysis integration
+- Post-session evaluation
+
+## 🗂️ Project Structure
 
 ```
-ollama serve
-# Expected to start listening on port 11434
+MindSage/
+├── backend/                 # Rust backend canister
+│   ├── lib.rs              # Main canister logic
+│   ├── Cargo.toml          # Rust dependencies
+│   └── backend.did         # Candid interface (auto-generated)
+├── frontend/               # React frontend
+│   ├── src/
+│   │   ├── auth/           # Authentication system
+│   │   │   ├── AuthContext.jsx        # Main auth context
+│   │   │   ├── LocalDevAuth.jsx       # Development auth
+│   │   │   └── developmentConfig.js   # Dev configuration
+│   │   ├── components/     # React components
+│   │   │   ├── Dashboard.jsx          # Main dashboard
+│   │   │   ├── LoginButton.jsx        # Authentication UI
+│   │   │   └── ErrorBoundary.jsx      # Error handling
+│   │   ├── main.jsx        # App entry point
+│   │   └── index.css       # Tailwind styles
+│   ├── index.html          # HTML template
+│   ├── package.json        # Node dependencies
+│   └── vite.config.js      # Vite configuration
+├── src/declarations/       # Auto-generated IC bindings
+├── dfx.json               # IC project configuration
+└── README.md              # This file
 ```
 
-The above command will start the Ollama server, so that it can process requests by the agent. Additionally, and in a separate window, run the following command to download the LLM that will be used by the agent:
+## 🔐 Security & Privacy
 
+### **Data Protection**
+- **On-Chain Storage** - All user data stored securely on Internet Computer
+- **Principal Isolation** - Each user's data is completely isolated
+- **No Server Dependencies** - Fully decentralized architecture
+- **End-to-End Encryption** - IC's built-in cryptographic security
+
+### **Authentication Security**
+- **Internet Identity** - Passwordless, phishing-resistant authentication
+- **Principal-based Access** - Cryptographic user identification
+- **Session Management** - Secure session handling with automatic timeouts
+- **Development Safety** - Isolated mock authentication for local testing
+
+### **Best Practices Implemented**
+- Input validation and sanitization
+- Error boundary protection
+- Secure storage patterns
+- Authentication state management
+- Privacy-preserving voice analysis
+
+## 🧠 Therapy Features Deep Dive
+
+### **Voice Analysis Engine**
+- **Pitch Detection** - Emotional state inference from vocal pitch
+- **Tempo Analysis** - Stress level assessment from speech speed
+- **Emotion Classification** - AI categorization (Neutral, Anxiety, Stress, etc.)
+- **Stress Indicators** - Real-time stress pattern detection
+
+### **CBT Reflection System**
+Responds to common cognitive distortions:
+- **All-or-Nothing Thinking** - "I'm a failure" → Reframing guidance
+- **Mind Reading** - "No one cares" → Evidence-based challenges
+- **Catastrophizing** - "It's hopeless" → Perspective shifting
+- **Custom Responses** - Adaptive AI responses to user inputs
+
+### **Progress Analytics**
+- **Session Count Tracking** - Total therapy sessions completed
+- **Stress Reduction Metrics** - Before/after session improvements
+- **Trend Analysis** - Progress over time visualization
+- **Personalized Recommendations** - AI-driven therapy suggestions
+
+## 🌐 Deployment
+
+### **Local Deployment**
+```bash
+dfx deploy --playground
 ```
-ollama run llama3.1:8b
+
+### **IC Mainnet Deployment**
+```bash
+# Add mainnet network identity
+dfx identity use default
+
+# Deploy to mainnet
+dfx deploy --network ic --with-cycles 2000000000000
 ```
 
-The above command will download an 8B parameter model, which is around 4GiB. Once the command executes and the model is loaded, you can terminate it. You won't need to do this step again.
-
-### 5. Deploy the project to your local environment:
-
-```
-dfx start --background --clean && dfx deploy
+### **Custom Network**
+```bash
+# Configure custom network in dfx.json
+dfx deploy --network <your-network>
 ```
 
-## Security considerations and best practices
+## 🤝 Contributing
 
-If you base your application on this example, it is recommended that you familiarize yourself with and adhere to the [security best practices](https://internetcomputer.org/docs/building-apps/security/overview) for developing on ICP. This example may not implement all the best practices.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: [Internet Computer Documentation](https://internetcomputer.org/docs)
+- **Developer Discord**: [IC Developer Community](https://discord.gg/icdevs)
+- **Forum**: [IC Developer Forum](https://forum.dfinity.org/)
+
+## 🙏 Acknowledgments
+
+- **Internet Computer** - For providing the secure, decentralized infrastructure
+- **IC Community** - For the amazing developer tools and support
+- **Mental Health Community** - For inspiration and guidance on therapy best practices
+
+---
+
+**MindSage** - Revolutionizing mental health care through AI and decentralized technology. 🧠✨
