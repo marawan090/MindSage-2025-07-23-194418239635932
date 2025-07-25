@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { useLocalDevAuth } from '../auth/LocalDevAuth';
 
-// Check if we're in development mode - be more aggressive about detecting local development
-const isDevelopment = true; // Force local development mode for now
+// Use local development for testing (avoids certificate issues)
+const isDevelopment = true; // Use mock authentication for testing
 
 const LoginButton = () => {
   // Use local dev auth in development, real auth in production

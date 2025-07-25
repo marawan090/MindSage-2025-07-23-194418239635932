@@ -7,8 +7,8 @@ import LoginButton from './components/LoginButton'
 import Dashboard from './components/Dashboard'
 import ErrorBoundary from './components/ErrorBoundary'
 
-// Check if we're in development mode - be more aggressive about detecting local development
-const isDevelopment = true; // Force local development mode for now
+// Use local development for testing (avoids certificate issues)
+const isDevelopment = true; // Use mock authentication for testing
 // const isDevelopment = process.env.DFX_NETWORK !== "ic" || 
 //                      process.env.NODE_ENV === "development" || 
 //                      window.location.hostname === "localhost" || 
